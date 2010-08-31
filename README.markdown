@@ -2,12 +2,16 @@
 
 ## Usage
 
-./tweetlinkr the_twitter_user
+`tweetlinkr user`
 
-Where the_twitter_user is the user whose timeline you wish to fetch.
+Where `user` is the user whose timeline you wish to fetch.
 
-tweetlinkr will then display any tweets containing a link.
+`tweetlinkr` will then display any tweets containing a link.
 
 ## Dependencies
 
 Requires [Net::Twitter](http://search.cpan.org/~mmims/Net-Twitter-3.13008/).
+
+## To Do
+
+
