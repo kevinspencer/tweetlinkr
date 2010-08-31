@@ -1,11 +1,20 @@
 #!/usr/bin/perl -w
+# Copyright 2010 Kevin Spencer <kevin@kevinspencer.org>
+#
+# Permission to use, copy, modify, distribute, and sell this software and its
+# documentation for any purpose is hereby granted without fee, provided that
+# the above copyright notice appear in all copies and that both that
+# copyright notice and this permission notice appear in supporting
+# documentation. No representations are made about the suitability of this
+# software for any purpose. It is provided "as is" without express or
+# implied warranty.
+#
 ################################################################################
 
-use Data::Dumper;
 use Net::Twitter;
 use strict;
 
-$Data::Dumper::Indent = 1;
+my $user = shift || 'kevin_spencer';
 my $accessTokensFile = 'accesstokens';
 
 my $nt = Net::Twitter->new(
@@ -24,10 +33,9 @@ if ($access_token && $access_token_secret) {
 if ( $nt->authorized() ) {
     eval {
         for (my $page = 1; ; ++$page) {
-            print "Finding page $page\n";
             my $tweets = $nt->user_timeline(
                 {
-                    screen_name => "kevin_spencer",
+                    screen_name => $user,
                     page => $page
                 }
             );

@@ -2,9 +2,9 @@
 
 ## Usage
 
-./tweetlinkr
+./tweetlinkr the_twitter_user_you_want
 
-Will print any tweets containing a link.
+Will print any tweets from that user containing a link.
 
 ## Dependencies
 
