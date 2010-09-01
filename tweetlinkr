@@ -22,10 +22,16 @@ my $twitter_user = shift || 'kevin_spencer';
 my $tokens_file = 
     File::Spec->catfile(File::HomeDir->my_home(), '.accesstokens');
 
+#
+# consumer_key and consumer_secret are provided by twitter on app registration
+#
+my $consumer_key    = 'deVbUDBadJHQn3dNsnqsA';
+my $consumer_secret = 'ZQVMbIvkGjf9mlyP2BfDzHWTtyj7NoBrUHMTqLfTzoI';
+
 my $nt = Net::Twitter->new(
     traits          => ['API::REST', 'OAuth'],
-    consumer_key    => "deVbUDBadJHQn3dNsnqsA",
-    consumer_secret => "ZQVMbIvkGjf9mlyP2BfDzHWTtyj7NoBrUHMTqLfTzoI",
+    consumer_key    => $consumer_key,
+    consumer_secret => $consumer_secret
 );
 
 # if we've been authorized before, there should be access tokens on disk...
