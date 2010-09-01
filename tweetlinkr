@@ -16,7 +16,7 @@ use File::Spec;
 use Net::Twitter;
 use strict;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 my $twitter_user = shift || 'kevin_spencer';
 my $tokens_file = 
@@ -35,38 +35,64 @@ if ($access_token && $access_token_secret) {
     $nt->access_token_secret($access_token_secret);
 }
 
-# if we're not authorized to continue we'll have to visit Twitter manually
-# authorize tweetlinkr, add the pin# to obtain/store our access tokens...
 if (! $nt->authorized()) {
-    print "Visit the following URL in your browser to authorize this app:\n" . 
-        $nt->get_authorization_url() . "\n";
-    print "Once done, enter the PIN#";
-    my $pin = <STDIN>; # wait for input
-    chomp $pin;
-
-    my($access_token, $access_token_secret, $user_id, $screen_name) = 
-        $nt->request_access_token(verifier => $pin);
-    store_tokens($access_token, $access_token_secret);
-    # TODO: do not exit here, should re-try after storing tokens...
+    get_twitter_authorization();
     exit();
 }
 
+#
+# twitter breaks up the user_timeline into pages so we have to iterate
+# through each page of tweets...
+# 
+
 eval {
     for (my $page = 1; ; ++$page) {
+        print "page $page\n";
         my $args   = { screen_name => $twitter_user, page => $page };
         my $tweets = $nt->user_timeline($args);
+        last if (! @$tweets);
         for my $tweet (@$tweets) {
             if ($tweet->{text} =~ /http:/) {
                 print $tweet->{text}, "\n";
             }
         }
-        # TODO: search entire timeline instead of first 3 pages...
-        last if ($page == 3);
     }
 };
 
 if (my $err = $@) {
     die "Twitter error: ", $err->error(), "\n";
+}
+
+#
+# if we're not authorized to continue we'll have to visit Twitter manually
+# authorize tweetlinkr, add the pin# to obtain/store our access tokens...
+#
+
+sub get_twitter_authorization {
+    print "Visit the following URL in your browser to authorize this app:\n" . 
+        $nt->get_authorization_url() . "\n";
+    print "Once done, enter the PIN# ";
+    
+    my $pin = <STDIN>; # wait for user input
+    chomp $pin;
+
+    eval {
+        print "PIN received, contacting twitter to obtain access tokens...\n";
+        my ($access_token, $access_token_secret, $user_id, $screen_name) = 
+            $nt->request_access_token(verifier => $pin);
+
+        if ($access_token && $access_token_secret) {
+            print "Tokens received, storing to $tokens_file...\n";
+            store_tokens($access_token, $access_token_secret);
+            print "Done.  Please run tweetlinkr again.\n";
+        } else {
+            print "Twitter error: did not receive access tokens.\n";
+        }
+    };
+
+    if (my $err = $@) {
+        die "Twitter error: ", $err->error(), "\n";
+    }
 }
 
 sub retrieve_tokens {
