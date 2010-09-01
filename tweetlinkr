@@ -11,11 +11,16 @@
 #
 ################################################################################
 
+use File::HomeDir;
+use File::Spec;
 use Net::Twitter;
 use strict;
 
+our $VERSION = '0.02';
+
 my $twitter_user = shift || 'kevin_spencer';
-my $tokens_file  = '~/.accesstokens';
+my $tokens_file  = 
+    File::Spec->catfile(File::HomeDir->my_home(), '.accesstokens');;
 
 my $nt = Net::Twitter->new(
     traits          => ['API::REST', 'OAuth'],
