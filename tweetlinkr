@@ -16,11 +16,11 @@ use File::Spec;
 use Net::Twitter;
 use strict;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 my $twitter_user = shift || 'kevin_spencer';
-my $tokens_file  = 
-    File::Spec->catfile(File::HomeDir->my_home(), '.accesstokens');;
+my $tokens_file = 
+    File::Spec->catfile(File::HomeDir->my_home(), '.accesstokens');
 
 my $nt = Net::Twitter->new(
     traits          => ['API::REST', 'OAuth'],
@@ -53,14 +53,9 @@ if (! $nt->authorized()) {
 
 eval {
     for (my $page = 1; ; ++$page) {
-        my $tweets = $nt->user_timeline(
-            {
-                screen_name => $twitter_user,
-                page => $page
-            }
-        );
+        my $args   = { screen_name => $twitter_user, page => $page };
+        my $tweets = $nt->user_timeline($args);
         for my $tweet (@$tweets) {
-            # this feels hacky...
             if ($tweet->{text} =~ /http:/) {
                 print $tweet->{text}, "\n";
             }
@@ -71,19 +66,21 @@ eval {
 };
 
 if (my $err = $@) {
-    warn "HTTP Response Code: ", $err->code(), "\n",
-        "HTTP Message......: ", $err->message(), "\n",
-        "Twitter error.....: ", $err->error(), "\n";
+    die "Twitter error: ", $err->error(), "\n";
 }
 
 sub retrieve_tokens {
-    open(TOKENS, $tokens_file) || return;
-    my $a_token = <TOKENS>;
-    chomp($a_token);
-    my $a_secret = <TOKENS>;
-    chomp($a_secret);
-    close(TOKENS);
-    return ($a_token, $a_secret);
+    if (-e $tokens_file) {
+        open(TOKENS, $tokens_file) || 
+            die "Could not read $tokens_file - $!\n";
+        my $a_token = <TOKENS>;
+        chomp($a_token);
+        my $a_secret = <TOKENS>;
+        chomp($a_secret);
+        close(TOKENS);
+        return ($a_token, $a_secret);
+    }
+    return;
 }
 
 sub store_tokens {
