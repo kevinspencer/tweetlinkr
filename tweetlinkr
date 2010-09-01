@@ -53,7 +53,6 @@ if (! $nt->authorized()) {
 
 eval {
     for (my $page = 1; ; ++$page) {
-        print "page $page\n";
         my $args   = { screen_name => $twitter_user, page => $page };
         my $tweets = $nt->user_timeline($args);
         last if (! @$tweets);
