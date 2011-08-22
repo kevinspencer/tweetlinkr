@@ -10,8 +10,11 @@ Installation
 
 Copy the tweetlinkr program to a directory of your choice.
 
-You'll need the Net::Twitter and File::HomeDir modules installed, all
-available from the CPAN.
+You'll need the following modules installed, all available from the CPAN:
+
+File::HomeDir
+IO::Prompt
+Net::Twitter
 
 Usage
 -----
