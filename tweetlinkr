@@ -1,5 +1,5 @@
-#!/usr/bin/perl -w
-# Copyright 2010 Kevin Spencer <kevin@kevinspencer.org>
+#!/usr/bin/env perl
+# Copyright 2010-2011 Kevin Spencer <kevin@kevinspencer.org>
 #
 # Permission to use, copy, modify, distribute, and sell this software and its
 # documentation for any purpose is hereby granted without fee, provided that
@@ -13,10 +13,12 @@
 
 use File::HomeDir;
 use File::Spec;
+use IO::Prompt;
 use Net::Twitter;
 use strict;
+use warnings;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 my $twitter_user = shift || 'kevin_spencer';
 my $tokens_file = 
@@ -76,10 +78,8 @@ if (my $err = $@) {
 sub get_twitter_authorization {
     print "Visit the following URL in your browser to authorize this app:\n" . 
         $nt->get_authorization_url() . "\n";
-    print "Once done, enter the PIN# ";
     
-    my $pin = <STDIN>; # wait for user input
-    chomp $pin;
+    my $pin = prompt("Once done, enter the PIN here: ");
 
     eval {
         print "PIN received, contacting twitter to obtain access tokens...\n";
@@ -102,13 +102,13 @@ sub get_twitter_authorization {
 
 sub retrieve_tokens {
     if (-e $tokens_file) {
-        open(TOKENS, $tokens_file) || 
+        open(my $fh, '<', $tokens_file) || 
             die "Could not read $tokens_file - $!\n";
-        my $a_token = <TOKENS>;
+        my $a_token = <$fh>;
         chomp($a_token);
-        my $a_secret = <TOKENS>;
+        my $a_secret = <$fh>;
         chomp($a_secret);
-        close(TOKENS);
+        close($fh);
         return ($a_token, $a_secret);
     }
     return;
@@ -117,9 +117,9 @@ sub retrieve_tokens {
 sub store_tokens {
     my ($a_token, $a_token_secret) = @_;
 
-    open(TOKENS, ">$tokens_file") ||
+    open(my $fh, '>', $tokens_file) ||
         die "Could not create $tokens_file - $!\n";
-    print TOKENS $a_token, "\n";
-    print TOKENS $a_token_secret, "\n";
-    close(TOKENS);
+    print $fh $a_token, "\n";
+    print $fh $a_token_secret, "\n";
+    close($fh);
 }
