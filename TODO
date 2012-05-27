@@ -1,4 +1,5 @@
 TODO
 ----
 
-- Expand URLs shortened with services such as bit.ly etc.
+- Add option to expand URLs shortened with services such as bit.ly with WWW::LongURL.
+- Cache results so that entire timeline is not pulled down on every run.
