@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-# Copyright 2010-2011 Kevin Spencer <kevin@kevinspencer.org>
+# Copyright 2010-2012 Kevin Spencer <kevin@kevinspencer.org>
 #
 # Permission to use, copy, modify, distribute, and sell this software and its
 # documentation for any purpose is hereby granted without fee, provided that
@@ -18,11 +18,10 @@ use Net::Twitter;
 use strict;
 use warnings;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 my $twitter_user = shift || 'kevin_spencer';
-my $tokens_file = 
-    File::Spec->catfile(File::HomeDir->my_home(), '.accesstokens');
+my $tokens_file = File::Spec->catfile(File::HomeDir->my_home(), '.twitter_tokens');
 
 #
 # consumer_key and consumer_secret are provided by twitter on app registration
@@ -36,7 +35,11 @@ my $nt = Net::Twitter->new(
     consumer_secret => $consumer_secret
 );
 
-# if we've been authorized before, there should be access tokens on disk...
+#
+# access_token and access_token_secret are given on a per-user basis
+# by twitter once the user has authorized tweetlinkr access, if we've
+# been authorized before, there should be access tokens on disk...
+#
 my($access_token, $access_token_secret) = retrieve_tokens();
 if ($access_token && $access_token_secret) {
     $nt->access_token($access_token);
@@ -44,8 +47,8 @@ if ($access_token && $access_token_secret) {
 }
 
 if (! $nt->authorized()) {
-    get_twitter_authorization();
-    exit();
+    print "Looks like we're not authorized yet...\n";
+    exit() if (! get_twitter_authorization());
 }
 
 #
@@ -89,15 +92,19 @@ sub get_twitter_authorization {
         if ($access_token && $access_token_secret) {
             print "Tokens received, storing to $tokens_file...\n";
             store_tokens($access_token, $access_token_secret);
-            print "Done.  Please run tweetlinkr again.\n";
+            $nt->access_token($access_token);
+            $nt->access_token_secret($access_token_secret);
+            print "Done.\n";
         } else {
             print "Twitter error: did not receive access tokens.\n";
         }
     };
 
     if (my $err = $@) {
-        die "Twitter error: ", $err->error(), "\n";
+        print "Twitter error: ", $err->error(), "\n";
+        return;
     }
+    return 1;
 }
 
 sub retrieve_tokens {
