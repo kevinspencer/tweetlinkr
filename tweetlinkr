@@ -18,7 +18,7 @@ use Net::Twitter;
 use strict;
 use warnings;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 my $twitter_user = shift || 'kevin_spencer';
 my $tokens_file = File::Spec->catfile(File::HomeDir->my_home(), '.twitter_tokens');
@@ -52,19 +52,24 @@ if (! $nt->authorized()) {
 }
 
 #
-# twitter breaks up the user_timeline into pages so we have to iterate
-# through each page of tweets...
-# 
-
+# https://dev.twitter.com/docs/working-with-timelines
+#
+# on first attempt, ask twitter for first 50 tweets...
+# and from there, all subsequent attempts send max_id
+# with every request to get next 50 tweets
+#
+my $max_id = 0;
+my $args = { screen_name => $twitter_user, count => 50 };
 eval {
-    for (my $page = 1; ; ++$page) {
-        my $args   = { screen_name => $twitter_user, page => $page };
+    while(1) {
+        $args->{max_id} = ($max_id - 1) if $max_id;
         my $tweets = $nt->user_timeline($args);
         last if (! @$tweets);
         for my $tweet (@$tweets) {
             if ($tweet->{text} =~ /http:/) {
                 print $tweet->{text}, "\n";
             }
+            $max_id = $tweet->{id};
         }
     }
 };
