@@ -18,7 +18,7 @@ use Net::Twitter;
 use strict;
 use warnings;
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 my $twitter_user = shift || 'kevin_spencer';
 my $tokens_file = File::Spec->catfile(File::HomeDir->my_home(), '.twitter_tokens');
