@@ -30,7 +30,7 @@ my $consumer_key    = 'deVbUDBadJHQn3dNsnqsA';
 my $consumer_secret = 'ZQVMbIvkGjf9mlyP2BfDzHWTtyj7NoBrUHMTqLfTzoI';
 
 my $nt = Net::Twitter->new(
-    traits          => ['API::REST', 'OAuth'],
+    traits          => ['API::RESTv1_1', 'OAuth'],
     consumer_key    => $consumer_key,
     consumer_secret => $consumer_secret
 );
