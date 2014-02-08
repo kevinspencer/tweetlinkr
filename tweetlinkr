@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-# Copyright 2010-2012 Kevin Spencer <kevin@kevinspencer.org>
+# Copyright 2010-2014 Kevin Spencer <kevin@kevinspencer.org>
 #
 # Permission to use, copy, modify, distribute, and sell this software and its
 # documentation for any purpose is hereby granted without fee, provided that
@@ -18,7 +18,7 @@ use Net::Twitter;
 use strict;
 use warnings;
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 my $twitter_user = shift || 'kevin_spencer';
 my $tokens_file = File::Spec->catfile(File::HomeDir->my_home(), '.twitter_tokens');
@@ -32,7 +32,8 @@ my $consumer_secret = 'ZQVMbIvkGjf9mlyP2BfDzHWTtyj7NoBrUHMTqLfTzoI';
 my $nt = Net::Twitter->new(
     traits          => ['API::RESTv1_1', 'OAuth'],
     consumer_key    => $consumer_key,
-    consumer_secret => $consumer_secret
+    consumer_secret => $consumer_secret,
+    ssl => 1
 );
 
 #
