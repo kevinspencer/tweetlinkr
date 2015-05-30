@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-# Copyright 2010-2014 Kevin Spencer <kevin@kevinspencer.org>
+# Copyright 2010-2015 Kevin Spencer <kevin@kevinspencer.org>
 #
 # Permission to use, copy, modify, distribute, and sell this software and its
 # documentation for any purpose is hereby granted without fee, provided that
@@ -18,10 +18,13 @@ use Net::Twitter;
 use strict;
 use warnings;
 
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 
 my $twitter_user = shift || 'kevin_spencer';
 my $tokens_file = File::Spec->catfile(File::HomeDir->my_home(), '.twitter_tokens');
+
+# avoid Wide character in print warning...
+binmode STDOUT, ':utf8';
 
 #
 # consumer_key and consumer_secret are provided by twitter on app registration
