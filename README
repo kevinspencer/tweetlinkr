@@ -14,7 +14,9 @@ You'll need the following modules installed, all available from the CPAN:
 
 File::HomeDir
 IO::Prompt
-Net::Twitter
+Try::Tiny
+Twitter::API
+Twitter::API::Util
 
 Usage
 -----
@@ -43,4 +45,4 @@ those token values.  It does this in a couple of steps:
   and access_token_secret from twitter and store those to a file for all future
   runs.
 
-tweetlinkr stores the access tokens in ~/.accesstokens
+tweetlinkr stores the access tokens in ~/.twitter_tokens
